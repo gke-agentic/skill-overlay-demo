@@ -9,7 +9,7 @@ diff --git a/SKILL.md b/SKILL.md
 --- a/SKILL.md
 +++ b/SKILL.md
 @@ -15,7 +15,7 @@ keeps its own changes to a skill while still taking upstream updates.
- Always specify the cluster's region when fetching credentials:
+ Always pass the cluster's region explicitly when you fetch credentials:
  
  ```bash
 -gcloud container clusters get-credentials CLUSTER --region=REGION --quiet
