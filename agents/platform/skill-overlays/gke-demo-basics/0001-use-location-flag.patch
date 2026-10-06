@@ -1,0 +1,19 @@
+Subject: Use --location so the credential proxy accepts the command
+
+Why: our credential proxy only accepts --location for get-credentials (toy example)
+Local-Issue: none (demo)
+Upstream-Issue: none (specific to this repository)
+Retire-When: never; the proxy rule is ours
+
+diff --git a/SKILL.md b/SKILL.md
+--- a/SKILL.md
++++ b/SKILL.md
+@@ -15,7 +15,7 @@ keeps its own changes to a skill while still taking upstream updates.
+ Always specify the cluster's region when fetching credentials:
+ 
+ ```bash
+-gcloud container clusters get-credentials CLUSTER --region=REGION --quiet
++gcloud container clusters get-credentials CLUSTER --location=LOCATION --quiet
+ ```
+ 
+ ## Checking Node Health

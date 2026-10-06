@@ -1,0 +1,28 @@
+name: validate
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+      - name: Skill overlays match (make skills-check)
+        run: make skills-check
+      - name: Upstream copies match google/skills (skips unless a copy or lock changed)
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            make skills-verify-upstream BASE="origin/${{ github.base_ref }}"
+          else
+            make skills-verify-upstream
+          fi
+      - name: Tool tests
+        run: make test
