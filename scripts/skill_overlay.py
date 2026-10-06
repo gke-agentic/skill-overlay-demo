@@ -227,9 +227,11 @@ def apply_overlay(skill, base, dest):
         res = git(["apply", "-p1", "--whitespace=nowarn", str(patch)], cwd=dest, check=False)
         if res.returncode != 0:
             raise OverlayError(
-                f"{skill}: patch {patch.name} no longer applies. An earlier patch it depended on may "
-                f"have been deleted, or a hand edit clashes. Fold or refresh it, then run "
-                f"`make skills-generate SKILL={skill}`.\n{res.stderr.decode(errors='replace')}"
+                f"{skill}: patch {patch.name} no longer applies. Either an earlier patch it depended on "
+                f"was deleted or a hand edit clashes (fold or refresh it, then run "
+                f"`make skills-generate SKILL={skill}`), or the upstream copy was changed without "
+                f"`make skills-sync SKILL={skill}` (revert the copy and lock, then sync, which "
+                f"carries the patches forward).\n{res.stderr.decode(errors='replace')}"
             )
     append = overlay_dir(skill) / APPEND_NAME
     if append.is_file():
