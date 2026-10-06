@@ -14,3 +14,4 @@ This is a toy skill used by the skill-overlay demo.
 kubectl apply -f pvc.yaml
 kubectl get pvc
 ```
+Hand edit.
