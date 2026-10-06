@@ -17,7 +17,7 @@ jobs:
           fetch-depth: 0
       - name: Skill overlays match (make skills-check)
         run: make skills-check
-      - name: Upstream copies match google/skills (skips unless a copy or lock changed)
+      - name: Upstream copies match upstream (skips unless a copy or lock changed)
         run: |
           if [ "${{ github.event_name }}" = "pull_request" ]; then
             make skills-verify-upstream BASE="origin/${{ github.base_ref }}"

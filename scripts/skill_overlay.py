@@ -620,7 +620,7 @@ def cmd_verify_upstream(changed_since=None):
         print(f"FAIL {msg}\n", file=sys.stderr)
     if failures:
         raise SystemExit(EXIT_FAILURE)
-    print(f"ok: {len(mirrored_skills())} upstream copies match google/skills at their locked commits")
+    print(f"ok: {len(mirrored_skills())} upstream copies match upstream at their locked commits")
 
 
 def require_mirrored(skill):
