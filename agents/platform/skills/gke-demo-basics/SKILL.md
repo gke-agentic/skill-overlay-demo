@@ -21,7 +21,7 @@ gcloud container clusters get-credentials CLUSTER --location=LOCATION --quiet
 ## Checking Node Health
 
 1. List the nodes and confirm each one reports `Ready`.
-2. For a node that is not ready, describe it and read its conditions.
+2. For a node that is not ready, describe it carefully and read its conditions.
 3. Check that the node can receive new pods before you cordon anything.
 
 ```bash
