@@ -12,7 +12,7 @@ keeps its own changes to a skill while still taking upstream updates.
 
 ## Cluster Credentials
 
-Always specify the cluster's region when fetching credentials:
+Always pass the cluster's region explicitly when you fetch credentials:
 
 ```bash
 gcloud container clusters get-credentials CLUSTER --region=REGION --quiet
@@ -22,7 +22,7 @@ gcloud container clusters get-credentials CLUSTER --region=REGION --quiet
 
 1. List the nodes and confirm each one reports `Ready`.
 2. For a node that is not ready, describe it and read its conditions.
-3. Check that the node can recieve new pods before you cordon anything.
+3. Check that the node can receive new pods before you cordon anything.
 
 ```bash
 kubectl get nodes

@@ -12,7 +12,7 @@ keeps its own changes to a skill while still taking upstream updates.
 
 ## Cluster Credentials
 
-Always specify the cluster's region when fetching credentials:
+Always pass the cluster's region explicitly when you fetch credentials:
 
 ```bash
 gcloud container clusters get-credentials CLUSTER --location=LOCATION --quiet
