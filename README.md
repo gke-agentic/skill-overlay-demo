@@ -6,7 +6,9 @@ kube-agents. It mirrors two toy skills from
 [`skill-overlay-demo-upstream`](https://github.com/gke-agentic/skill-overlay-demo-upstream),
 which plays the part of `google/skills`, and keeps local changes to them as patch files.
 
-`scripts/skill_overlay.py` is a working prototype of the tool the design proposes, with
+`scripts/skill_overlay.py` is a copy of kube-agents' own tool (`scripts/skill_overlay.py` on
+`main` at `1a26e46d`, 2026-11-09). Two things differ: its default upstream is this demo's
+upstream, and its messages say "upstream" where kube-agents says `google/skills`. It has
 scenario tests (`make test`).
 
 ## Layout
@@ -35,15 +37,27 @@ What is in it today:
 | `make skills-generate SKILL=x` | Rebuilds ③ after you edit a patch or `append.md`. |
 | `make skills-sync SKILL=x [REF=v3]` | Moves one skill to upstream's latest (or a tag/commit), rebasing its patches. Adopts the skill if it is not mirrored yet. |
 | `make skills-continue SKILL=x` | Resumes a sync that stopped on a conflict. |
+| `make skills-import SKILL=x REF=v1` | Starts mirroring a skill this repository already ships, without changing it; `skills-refresh` then records the differences as patches. |
 | `make skills-status` | Lists skills upstream has moved past, and upstream skills not mirrored. |
 
 Requires `git` and Python 3.12 or newer. The tool fetches the upstream repository over HTTPS.
 
 ## Demo walkthrough
 
-Run these in a fresh clone. Each step can be undone with `git checkout -- . && git clean -fd`.
+The steps follow the flow a contributor uses in kube-agents: look first, edit, record the edit
+as a patch, check, and sync. Run them in a fresh clone. Each step can be undone with
+`git checkout -- . && git clean -fd`.
 
-### 1. Change a skill: edit, refresh, done
+### 1. See where you stand
+
+```bash
+make skills-status
+# behind      gke-demo-basics: 3 newer upstream commit(s)
+# behind      gke-demo-storage: 1 newer upstream commit(s)
+# not mirrored gke-demo-network
+```
+
+### 2. Change a skill: edit, refresh, check
 
 ```bash
 sed -i.bak 's/1. List the nodes/1. List the nodes with `-o wide`/' agents/platform/skills/gke-demo-basics/SKILL.md && rm agents/platform/skills/gke-demo-basics/SKILL.md.bak
@@ -52,27 +66,29 @@ make skills-refresh SKILL=gke-demo-basics MSG="Show node IPs in the listing"
 make skills-check          # passes: 0003-show-node-ips-in-the-listing.patch now records it
 ```
 
-### 2. Sync with a nearby upstream edit: merges on its own
+`skills-refresh` asks you to fill in the new patch's `Why:` header.
+
+### 3. Sync with a nearby upstream edit: merges on its own
 
 Upstream `v2` reworded the line two lines above the command our `0001` patch changes.
 
 ```bash
 make skills-sync SKILL=gke-demo-basics REF=v2
-grep -n -A4 'Cluster Credentials' agents/platform/skills/gke-demo-basics/SKILL.md
+grep -n -A6 'Cluster Credentials' agents/platform/skills/gke-demo-basics/SKILL.md
 # upstream's new wording and our --location both survive
 ```
 
-### 3. Upstream adopts one of our patches: retired automatically
+### 4. Upstream adopts one of our patches: retired automatically
 
 Upstream `v3` fixed the same typo our `0002` patch fixes.
 
 ```bash
 make skills-sync SKILL=gke-demo-basics REF=v3
-# prints: retired 0002-fix-recieve-typo.patch (upstream now carries it). Why: ...
+# retired 0002-fix-recieve-typo.patch (upstream now carries it). Why: ...
 ls agents/platform/skill-overlays/gke-demo-basics/
 ```
 
-### 4. Upstream edits our patched line: the sync stops for a person
+### 5. Upstream edits our patched line: the sync stops for a person
 
 Upstream `v4` changed the `gcloud` command itself, the line `0001` rewrites.
 
@@ -87,17 +103,15 @@ make skills-check
 
 The patch keeps its file name and `Why:` header; only its content is refreshed.
 
-### 5. See what is behind, and adopt a new upstream skill
+### 6. Adopt a new upstream skill
 
 ```bash
-make skills-status
-# behind      gke-demo-basics: 3 newer upstream commit(s)
-# behind      gke-demo-storage: 1 newer upstream commit(s)
-# not mirrored gke-demo-network
 make skills-sync SKILL=gke-demo-network
+# adopted gke-demo-network at upstream d89a5e81c38d
+make skills-status         # gke-demo-network is now "up to date"
 ```
 
-### 6. The guardrails
+### 7. The guardrails
 
 ```bash
 echo "hand edit" >> third_party/google-skills/gke-demo-storage/SKILL.md
